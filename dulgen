@@ -1,0 +1,383 @@
+#! /bin/bash
+while getopts a:n:h:o: flag
+do
+    case "${flag}" in
+        a) action=${OPTARG};;
+        n) name=${OPTARG};;
+        h) http=${OPTARG};;
+        o) option=${OPTARG};;
+    esac
+done
+
+if [[ "$action" == "http" && ! -z "$name" ]]; then
+    upper=$(printf "%s" ${name:0:1} | tr '[:lower:]' '[:upper:]')
+    lower=$(printf "%s" ${name:1})
+    Feature=$(printf "%s" $upper$lower)
+    FeatureLowerFirst=$(printf "%s" ${Feature:0:1} | tr '[:upper:]' '[:lower:]')$(printf "%s" ${Feature:1})
+    FeatureLower=$(printf "%s" $Feature | tr '[:upper:]' '[:lower:]')
+    FeatureCamelCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:upper:]' '[:lower:]')
+    FeatureCamelUpperCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:lower:]' '[:upper:]')
+    
+    nameDashes=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\-\1/g' -e 's/\-//' | tr '[:upper:]' '[:lower:]')
+    nameUpper=$Feature
+    nameLower=$name
+
+    echo $nameDashes
+    echo $nameLower
+    echo $nameUpper
+
+    cp -R types/api/sample/ $(printf "types/api/%s/" $nameDashes)
+    [ -f types/api/$nameDashes/createSample.ts ] && mv types/api/$nameDashes/CreateSample.ts types/api/$nameDashes/Create${nameUpper}.ts
+    [ -f types/api/$nameDashes/deleteSample.ts ] && mv types/api/$nameDashes/DeleteSample.ts types/api/$nameDashes/Delete${nameUpper}.ts
+    [ -f types/api/$nameDashes/updateSample.ts ] && mv types/api/$nameDashes/UpdateSample.ts types/api/$nameDashes/Update${nameUpper}.ts
+    [ -f types/api/$nameDashes/getSampleDetail.ts ] && mv types/api/$nameDashes/GetSampleDetail.ts types/api/$nameDashes/Get${nameUpper}Detail.ts
+    [ -f types/api/$nameDashes/getSampleList.ts ] && mv types/api/$nameDashes/GetSampleList.ts types/api/$nameDashes/Get${nameUpper}List.ts
+    
+    cp -R composables/api/sample/ $(printf "composables/api/%s/" $nameDashes)
+    [ -f composables/api/$nameDashes/createSample.ts ] && mv composables/api/$nameDashes/createSample.ts composables/api/$nameDashes/create${nameUpper}.ts
+    [ -f composables/api/$nameDashes/deleteSample.ts ] && mv composables/api/$nameDashes/deleteSample.ts composables/api/$nameDashes/delete${nameUpper}.ts
+    [ -f composables/api/$nameDashes/updateSample.ts ] && mv composables/api/$nameDashes/updateSample.ts composables/api/$nameDashes/update${nameUpper}.ts
+    [ -f composables/api/$nameDashes/getSampleDetail.ts ] && mv composables/api/$nameDashes/getSampleDetail.ts composables/api/$nameDashes/get${nameUpper}Detail.ts
+    [ -f composables/api/$nameDashes/getSampleList.ts ] && mv composables/api/$nameDashes/getSampleList.ts composables/api/$nameDashes/get${nameUpper}List.ts
+    
+    COMMAND1=$(printf 's/%s/%s/g' '\/sample\/' "\/$nameDashes\/")
+    COMMAND2=$(printf 's/Sample/%s/g' $nameUpper)
+    COMMAND3=$(printf 's/sample/%s/g' $nameLower)
+
+
+    sed -i '' $COMMAND1  $(printf "types/api/%s/Create%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "types/api/%s/Create%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "types/api/%s/Create%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND1  $(printf "types/api/%s/Delete%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "types/api/%s/Delete%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "types/api/%s/Delete%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND1  $(printf "types/api/%s/Update%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "types/api/%s/Update%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "types/api/%s/Update%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND1  $(printf "types/api/%s/Get%sDetail.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "types/api/%s/Get%sDetail.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "types/api/%s/Get%sDetail.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND1  $(printf "types/api/%s/Get%sList.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "types/api/%s/Get%sList.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "types/api/%s/Get%sList.ts" $nameDashes $nameUpper)
+
+    sed -i '' $COMMAND1  $(printf "composables/api/%s/create%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "composables/api/%s/create%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "composables/api/%s/create%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND1  $(printf "composables/api/%s/delete%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "composables/api/%s/delete%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "composables/api/%s/delete%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND1  $(printf "composables/api/%s/update%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "composables/api/%s/update%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "composables/api/%s/update%s.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND1  $(printf "composables/api/%s/get%sDetail.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "composables/api/%s/get%sDetail.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "composables/api/%s/get%sDetail.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND1  $(printf "composables/api/%s/get%sList.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND2  $(printf "composables/api/%s/get%sList.ts" $nameDashes $nameUpper)
+    sed -i '' $COMMAND3  $(printf "composables/api/%s/get%sList.ts" $nameDashes $nameUpper)
+
+    echo "Generate API"
+elif [[ "$action" == "backoffice" && ! -z "$name" ]]; then
+    upper=$(printf "%s" ${name:0:1} | tr '[:lower:]' '[:upper:]')
+    lower=$(printf "%s" ${name:1})
+    Feature=$(printf "%s" $upper$lower)
+    FeatureLowerFirst=$(printf "%s" ${Feature:0:1} | tr '[:upper:]' '[:lower:]')$(printf "%s" ${Feature:1})
+    FeatureLower=$(printf "%s" $Feature | tr '[:upper:]' '[:lower:]')
+    FeatureCamelCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:upper:]' '[:lower:]')
+    FeatureCamelUpperCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:lower:]' '[:upper:]')
+    
+    nameDashes=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\-\1/g' -e 's/\-//' | tr '[:upper:]' '[:lower:]')
+    nameUpper=$Feature
+    nameLower=$name
+
+    upper=$(printf "%s" ${http:0:1} | tr '[:lower:]' '[:upper:]')
+    lower=$(printf "%s" ${http:1})
+    Feature=$(printf "%s" $upper$lower)
+    FeatureLowerFirst=$(printf "%s" ${Feature:0:1} | tr '[:upper:]' '[:lower:]')$(printf "%s" ${Feature:1})
+    FeatureLower=$(printf "%s" $Feature | tr '[:upper:]' '[:lower:]')
+    FeatureCamelCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:upper:]' '[:lower:]')
+    FeatureCamelUpperCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:lower:]' '[:upper:]')
+    
+    httpDashes=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\-\1/g' -e 's/\-//' | tr '[:upper:]' '[:lower:]')
+    httpUpper=$Feature
+    httpLower=$http
+
+    upper=$(printf "%s" ${option:0:1} | tr '[:lower:]' '[:upper:]')
+    lower=$(printf "%s" ${option:1})
+    Feature=$(printf "%s" $upper$lower)
+    FeatureLowerFirst=$(printf "%s" ${Feature:0:1} | tr '[:upper:]' '[:lower:]')$(printf "%s" ${Feature:1})
+    FeatureLower=$(printf "%s" $Feature | tr '[:upper:]' '[:lower:]')
+    FeatureCamelCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:upper:]' '[:lower:]')
+    FeatureCamelUpperCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:lower:]' '[:upper:]')
+    
+    optionDashes=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\-\1/g' -e 's/\-//' | tr '[:upper:]' '[:lower:]')
+    optionUpper=$Feature
+    optionLower=$option
+
+    # echo $nameLower
+    # echo $nameUpper
+    # echo $nameDashes
+
+    # echo $httpLower
+    # echo $httpUpper
+    # echo $httpDashes
+
+    # echo $optionLower
+    # echo $optionUpper
+    # echo $optionDashes
+
+
+    cp -rf pages/backoffice/sample/ $(printf "pages/backoffice/%s/" $nameDashes)
+
+    COMMANDAPI1=$(printf 's/%s/%s/g' '\/sample-api\/' "\/$httpDashes\/")
+    COMMANDAPI2=$(printf 's/SampleApi/%s/g' $httpUpper)
+    COMMANDAPI3=$(printf 's/sampleApi/%s/g' $httpLower)
+
+    sed -i '' $COMMANDAPI1  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+    sed -i '' $COMMANDAPI2  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+    sed -i '' $COMMANDAPI3  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+
+    COMMANDPAGE1=$(printf 's/%s/%s/g' '\/sample-page\/' "\/$nameDashes\/")
+    COMMANDPAGE2=$(printf 's/SamplePage/%s/g' $nameUpper)
+    COMMANDPAGE3=$(printf 's/samplePage/%s/g' $nameLower)
+
+    sed -i '' $COMMANDPAGE1  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE2  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE3  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+
+    if [[ ! -z "$option" ]]; then
+        COMMANDOPTIONS1=$(printf 's/%s/%s/g' '\/sample-options\/' "\/$optionDashes\/")
+        COMMANDOPTIONS2=$(printf 's/SampleOptions/%s/g' $optionUpper)
+        COMMANDOPTIONS3=$(printf 's/sampleOptions/%s/g' $optionLower)
+        sed -i '' $COMMANDOPTIONS1  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+    else
+        COMMANDOPTIONS1=$(printf 's/%s/%s/g' '\/sample-options\/' "\/sample\/")
+        COMMANDOPTIONS2=$(printf 's/SampleOptions/%s/g' 'Sample')
+        COMMANDOPTIONS3=$(printf 's/sampleOptions/%s/g' 'Sample')
+        sed -i '' $COMMANDOPTIONS1  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "pages/backoffice/%s/index.vue" $nameDashes)
+    fi
+
+    echo "Generate Index Page"
+
+
+    cp -rf components/pages/backoffice/sample/ $(printf "components/pages/backoffice/%s/" $nameDashes)
+    COMMANDAPI1=$(printf 's/%s/%s/g' '\/sample-api\/' "\/$httpDashes\/")
+    COMMANDAPI2=$(printf 's/SampleApi/%s/g' $httpUpper)
+    COMMANDAPI3=$(printf 's/sampleApi/%s/g' $httpLower)
+
+    COMMANDPAGE1=$(printf 's/%s/%s/g' '\/sample-page\/' "\/$nameDashes\/")
+    COMMANDPAGE2=$(printf 's/SamplePage/%s/g' $nameUpper)
+    COMMANDPAGE3=$(printf 's/samplePage/%s/g' $nameLower)
+
+    sed -i '' $COMMANDAPI1  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDAPI2  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDAPI3  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE1  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE2  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE3  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+    echo "Generate 'Create' Page"
+
+    sed -i '' $COMMANDAPI1  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDAPI2  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDAPI3  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE1  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE2  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE3  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+    echo "Generate 'Update' Page"
+
+    sed -i '' $COMMANDAPI1  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDAPI2  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDAPI3  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE1  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE2  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE3  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+    echo "Generate 'Detail' Page"
+
+    if [[ ! -z "$option" ]]; then
+        COMMANDOPTIONS1=$(printf 's/%s/%s/g' '\/sample-options\/' "\/$optionDashes\/")
+        COMMANDOPTIONS2=$(printf 's/SampleOptions/%s/g' $optionUpper)
+        COMMANDOPTIONS3=$(printf 's/sampleOptions/%s/g' $optionLower)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+    else
+        COMMANDOPTIONS1=$(printf 's/%s/%s/g' '\/sample-options\/' "\/sample\/")
+        COMMANDOPTIONS2=$(printf 's/SampleOptions/%s/g' 'Sample')
+        COMMANDOPTIONS3=$(printf 's/sampleOptions/%s/g' 'Sample')
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/backoffice/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/backoffice/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/backoffice/%s/Detail.vue" $nameDashes)
+    fi
+
+
+    echo "Generate Backoffice"
+elif [[ "$action" == "academic" && ! -z "$name" ]]; then
+    upper=$(printf "%s" ${name:0:1} | tr '[:lower:]' '[:upper:]')
+    lower=$(printf "%s" ${name:1})
+    Feature=$(printf "%s" $upper$lower)
+    FeatureLowerFirst=$(printf "%s" ${Feature:0:1} | tr '[:upper:]' '[:lower:]')$(printf "%s" ${Feature:1})
+    FeatureLower=$(printf "%s" $Feature | tr '[:upper:]' '[:lower:]')
+    FeatureCamelCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:upper:]' '[:lower:]')
+    FeatureCamelUpperCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:lower:]' '[:upper:]')
+    
+    nameDashes=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\-\1/g' -e 's/\-//' | tr '[:upper:]' '[:lower:]')
+    nameUpper=$Feature
+    nameLower=$name
+
+    upper=$(printf "%s" ${http:0:1} | tr '[:lower:]' '[:upper:]')
+    lower=$(printf "%s" ${http:1})
+    Feature=$(printf "%s" $upper$lower)
+    FeatureLowerFirst=$(printf "%s" ${Feature:0:1} | tr '[:upper:]' '[:lower:]')$(printf "%s" ${Feature:1})
+    FeatureLower=$(printf "%s" $Feature | tr '[:upper:]' '[:lower:]')
+    FeatureCamelCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:upper:]' '[:lower:]')
+    FeatureCamelUpperCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:lower:]' '[:upper:]')
+    
+    httpDashes=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\-\1/g' -e 's/\-//' | tr '[:upper:]' '[:lower:]')
+    httpUpper=$Feature
+    httpLower=$http
+
+    upper=$(printf "%s" ${option:0:1} | tr '[:lower:]' '[:upper:]')
+    lower=$(printf "%s" ${option:1})
+    Feature=$(printf "%s" $upper$lower)
+    FeatureLowerFirst=$(printf "%s" ${Feature:0:1} | tr '[:upper:]' '[:lower:]')$(printf "%s" ${Feature:1})
+    FeatureLower=$(printf "%s" $Feature | tr '[:upper:]' '[:lower:]')
+    FeatureCamelCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:upper:]' '[:lower:]')
+    FeatureCamelUpperCase=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\_\1/g' -e 's/\_//' | tr '[:lower:]' '[:upper:]')
+    
+    optionDashes=$(printf "%s" $Feature | sed -e 's/\([A-Z]\)/\-\1/g' -e 's/\-//' | tr '[:upper:]' '[:lower:]')
+    optionUpper=$Feature
+    optionLower=$option
+
+    # echo $nameLower
+    # echo $nameUpper
+    # echo $nameDashes
+
+    # echo $httpLower
+    # echo $httpUpper
+    # echo $httpDashes
+
+    # echo $optionLower
+    # echo $optionUpper
+    # echo $optionDashes
+
+
+    cp -rf pages/backoffice/sample/ $(printf "pages/academic-portal/%s/" $nameDashes)
+
+    COMMANDAPI1=$(printf 's/%s/%s/g' '\/sample-api\/' "\/$httpDashes\/")
+    COMMANDAPI2=$(printf 's/SampleApi/%s/g' $httpUpper)
+    COMMANDAPI3=$(printf 's/sampleApi/%s/g' $httpLower)
+
+    sed -i '' $COMMANDAPI1  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+    sed -i '' $COMMANDAPI2  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+    sed -i '' $COMMANDAPI3  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+
+    COMMANDPAGE1=$(printf 's/%s/%s/g' '\/sample-page\/' "\/$nameDashes\/")
+    COMMANDPAGE2=$(printf 's/SamplePage/%s/g' $nameUpper)
+    COMMANDPAGE3=$(printf 's/samplePage/%s/g' $nameLower)
+
+    sed -i '' $COMMANDPAGE1  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE2  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE3  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+
+    if [[ ! -z "$option" ]]; then
+        COMMANDOPTIONS1=$(printf 's/%s/%s/g' '\/sample-options\/' "\/$optionDashes\/")
+        COMMANDOPTIONS2=$(printf 's/SampleOptions/%s/g' $optionUpper)
+        COMMANDOPTIONS3=$(printf 's/sampleOptions/%s/g' $optionLower)
+        sed -i '' $COMMANDOPTIONS1  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+    else
+        COMMANDOPTIONS1=$(printf 's/%s/%s/g' '\/sample-options\/' "\/sample\/")
+        COMMANDOPTIONS2=$(printf 's/SampleOptions/%s/g' 'Sample')
+        COMMANDOPTIONS3=$(printf 's/sampleOptions/%s/g' 'Sample')
+        sed -i '' $COMMANDOPTIONS1  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "pages/academic-portal/%s/index.vue" $nameDashes)
+    fi
+
+    echo "Generate Index Page"
+
+
+    cp -rf components/pages/backoffice/sample/ $(printf "components/pages/academic-portal/%s/" $nameDashes)
+    COMMANDAPI1=$(printf 's/%s/%s/g' '\/sample-api\/' "\/$httpDashes\/")
+    COMMANDAPI2=$(printf 's/SampleApi/%s/g' $httpUpper)
+    COMMANDAPI3=$(printf 's/sampleApi/%s/g' $httpLower)
+
+    COMMANDPAGE1=$(printf 's/%s/%s/g' '\/sample-page\/' "\/$nameDashes\/")
+    COMMANDPAGE2=$(printf 's/SamplePage/%s/g' $nameUpper)
+    COMMANDPAGE3=$(printf 's/samplePage/%s/g' $nameLower)
+
+    sed -i '' $COMMANDAPI1  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDAPI2  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDAPI3  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE1  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE2  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE3  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+    echo "Generate 'Create' Page"
+
+    sed -i '' $COMMANDAPI1  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDAPI2  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDAPI3  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE1  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE2  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE3  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+    echo "Generate 'Update' Page"
+
+    sed -i '' $COMMANDAPI1  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDAPI2  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDAPI3  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE1  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE2  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+    sed -i '' $COMMANDPAGE3  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+    echo "Generate 'Detail' Page"
+
+    if [[ ! -z "$option" ]]; then
+        COMMANDOPTIONS1=$(printf 's/%s/%s/g' '\/sample-options\/' "\/$optionDashes\/")
+        COMMANDOPTIONS2=$(printf 's/SampleOptions/%s/g' $optionUpper)
+        COMMANDOPTIONS3=$(printf 's/sampleOptions/%s/g' $optionLower)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+    else
+        COMMANDOPTIONS1=$(printf 's/%s/%s/g' '\/sample-options\/' "\/sample\/")
+        COMMANDOPTIONS2=$(printf 's/SampleOptions/%s/g' 'Sample')
+        COMMANDOPTIONS3=$(printf 's/sampleOptions/%s/g' 'Sample')
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/academic-portal/%s/Create.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/academic-portal/%s/Update.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS1  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS2  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+        sed -i '' $COMMANDOPTIONS3  $(printf "components/pages/academic-portal/%s/Detail.vue" $nameDashes)
+    fi
+
+
+    echo "Generate Academic"    
+else
+    echo "Unknown Commmand"
+fi
